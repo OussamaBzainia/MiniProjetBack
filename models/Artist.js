@@ -1,5 +1,7 @@
-import mongoose from "mongoose"; 
+import mongoose, { mongo } from "mongoose"; 
 const {Schema,model} =mongoose;
+
+
 
 
 const ArtistSchema=new Schema(
@@ -7,29 +9,37 @@ const ArtistSchema=new Schema(
 
         email:{
             type:String,
-            required:true,
-            index: { unique: true }
+           
+            
             
         },
         mdp:{
             type:String,
-            required:true
+          
+        },
+        FullName:{
+            type:String,
+            
         },
         confirmMdp:{
             type:String
         },
-        nom:{
-            type:String,
-            required:true
-        },
-        prenom:{
-            type:String,
-            required:true
-        },
+        verified:{ type: Boolean},
+        otp:{type:String},
+        username:{type:String},
+        PhoneNumber:{type:String},
+        Gender:{type:String},
+        BirthDate:{type:String},
+        Description:{type:String},
+        resetPasswordToken:{ type: String },
+        resetPasswordExpire :{ type: String },
+        otpReset:{type:String},
+        posts:[{type:mongoose.Types.ObjectId,ref:"Post"}],    
         token: { type: String },
         ProfilePic:{
             type: String
         },
+       
     
     },
 
@@ -37,5 +47,7 @@ const ArtistSchema=new Schema(
         timestamps:true
     }
 );
+
+
 
 export default model("Artist",ArtistSchema);

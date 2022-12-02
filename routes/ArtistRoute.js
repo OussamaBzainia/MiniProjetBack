@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllArtists,AddArtist,getOneArtist,deleteOneArtist,registerArtist, login, signOut, resetLink, resetPassword } from '../controllers/ArtistController.js';
+import { getAllArtists,AddArtist,getOneArtist,deleteOneArtist,registerArtist, login, signOut, sendpasswordEmail, resetPassword,verifyEmail,UpdateArtistById } from '../controllers/ArtistController.js';
 import { check, validationResult } from "express-validator";
 import auth from "../middlewares/auth.js";
 import multer from "../middlewares/multer-config.js";
@@ -20,7 +20,7 @@ router
 
 
 router 
-      .route('/:nom')
+      .route('/:id')
       .get(getOneArtist)
 
 router
@@ -31,21 +31,32 @@ router
       .route('/register')
       .post(registerArtist);
 
+router 
+      .route('/verify')
+      .post(verifyEmail)
+
 router
       .route('/login')
       .post(login)
 
 router
-      .route("/singOut")
+      .route("/logOut")
       .post(signOut);
 
 router.post("/welcome", auth, (req, res) => {
             res.status(200).send("Welcome");
           });
 
-router.route("/getlink")
-      .post(resetLink)
+router.route("/getOTP")
+          .post(sendpasswordEmail)
 
-router.route("/:userId/:token")
-      .post(resetPassword)
+router.route("/resetPassword")
+          .post(resetPassword)
+    
+router.route("/:token/:userId")
+          .post(resetPassword)
+
+router.route("/update/:id")
+      .put(UpdateArtistById);
+      
 export default router;

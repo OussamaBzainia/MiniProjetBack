@@ -4,16 +4,13 @@ const {Schema,model} =mongoose;
 const tokenSchema = new Schema({
     userId: {
         type: Schema.Types.ObjectId,
-        required: true,
-        ref: "user",
+        ref: "Artist"
     },
-    tokenReset: {
-        type: String,
-        required: true,
+    token: {
+        type: String
     },
     createdAt: {
         type: Date,
-        default: Date.now,
         expires: 3600,
     },
 });

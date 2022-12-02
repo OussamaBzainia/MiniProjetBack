@@ -24,4 +24,4 @@ export default multer({
     }),
 
     limits:10*1024*1024,
-}).single("ProfilePic");
+}).single("image");
