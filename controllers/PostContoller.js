@@ -26,28 +26,28 @@ import mongoose from "mongoose";
 
 // create post
 export async function addPost(req,res){
-    const {title,description,userId}=req.body;
-    let existingUser;
-    try{
-        existingUser=await Artist.findById(userId)
+    // const {userId}=req.body;
+    // let existingUser;
+    // try{
+    //     existingUser=await Artist.findById(userId)
 
-    }
-    catch(err){
-        return console.log(err);
-    }
-    if(!existingUser){
-        return res.status(400).json({message:"Unable to find the user"});
-    }
+    // }
+    // catch(err){
+    //     return console.log(err);
+    // }
+    // if(!existingUser){
+    //     return res.status(400).json({message:"Unable to find the user"});
+    // }
     Post.create({
         title:req.body.title,
         description:req.body.description,
         //image:`${req.protocol}://${req.get('host')}/img/${req.file.filename}`,
-        userId:req.body.userId
+        //userId:req.body.userId
         
     })
     .then(newPost=>{
-        existingUser.posts.push(newPost);
-        existingUser.save();
+        //existingUser.posts.push(newPost);
+        //existingUser.save();
         res.status(200).json(newPost);
     })
     .catch(err=>{
@@ -97,3 +97,20 @@ export function deleteOnePost(req,res){
      res.status(500).json({error:err});
     });
 }
+
+//Like a post
+
+export async function LikePost(req, res) {
+    try {
+      const post = await Post.findById(req.params.id);
+      if (!post.likes.includes(req.body.userId)) {
+        await post.updateOne({ $push: { likes: req.body.userId } });
+        res.status(200).json("The post has been liked");
+      } else {
+        await post.updateOne({ $pull: { likes: req.body.userId } });
+        res.status(200).json("The post has been disliked");
+      }
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  };

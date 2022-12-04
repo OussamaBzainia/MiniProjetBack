@@ -409,44 +409,46 @@ export async function resetPassword(req, res) {
 
 }
 
+//follow user
+export async function followArtist(req,res){
 
-
-
-
-
-
-
-
-
-/*
-export async function resetLink(req,res){
-
+  if (req.body.userId !== req.params.id) {
     try {
-        const schema = Joi.object({ email: Joi.string().email().required() });
-        const { error } = schema.validate(req.body);
-        if (error) return res.status(400).send(error.details[0].message);
-
-        const user = await Artist.findOne({ email: req.body.email });
-        if (!user)
-            return res.status(400).send("user with given email doesn't exist");
-
-        let resetToken = await tokenReset.findOne({ userId: user._id });
-        if (!resetToken) {
-            resetToken =tokenReset.create({
-                userId: user._id,
-                tokenReset: "test"
-            });
-        }
-
-        const link = `${process.env.BASE_URL}/password-reset/${user._id}/${resetToken.tokenReset}`;
-        await sendEmail(user.email, "Password reset", link);
-
-        res.send("password reset link sent to your email account");
-    } catch (error) {
-        res.send("An error occured");
-        console.log(error);
+      const user = await Artist.findById(req.params.id);
+      const currentUser = await Artist.findById(req.body.userId);
+      if (!user.followers.includes(req.body.userId)) {
+        await user.updateOne({ $push: { followers: req.body.userId } });
+        await currentUser.updateOne({ $push: { followings: req.params.id } });
+        res.status(200).json("user has been followed");
+      } else {
+        res.status(403).json("you allready follow this user");
+      }
+    } catch (err) {
+      res.status(500).json(err);
     }
+  } else {
+    res.status(403).json("you cant follow yourself");
+  }
+}
+  
+//unfollow a user
 
-}*/
-
-// res.send("password reset link sent to your email account");
+export async function  unfollowArtist(req, res) {
+  if (req.body.userId !== req.params.id) {
+    try {
+      const user = await Artist.findById(req.params.id);
+      const currentUser = await Artist.findById(req.body.userId);
+      if (user.followers.includes(req.body.userId)) {
+        await user.updateOne({ $pull: { followers: req.body.userId } });
+        await currentUser.updateOne({ $pull: { followings: req.params.id } });
+        res.status(200).json("user has been unfollowed");
+      } else {
+        res.status(403).json("you dont follow this user");
+      }
+    } catch (err) {
+      res.status(500).json(err);
+    }
+  } else {
+    res.status(403).json("you cant unfollow yourself");
+  }
+}

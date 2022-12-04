@@ -13,7 +13,7 @@ import Artist from './models/Artist.js';
 
 
 const app=express();
-const hostname='172.17.3.84';
+const hostname='127.0.0.1';
 const port=process.env.PORT || 9090;
 const DataBaseName='MiniProjeta';
 

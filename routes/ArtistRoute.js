@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllArtists,AddArtist,getOneArtist,deleteOneArtist,registerArtist, login, signOut, sendpasswordEmail, resetPassword,verifyEmail,UpdateArtistById } from '../controllers/ArtistController.js';
+import { getAllArtists,AddArtist,getOneArtist,deleteOneArtist,registerArtist, login, signOut, sendpasswordEmail, resetPassword,verifyEmail,UpdateArtistById,followArtist,unfollowArtist } from '../controllers/ArtistController.js';
 import { check, validationResult } from "express-validator";
 import auth from "../middlewares/auth.js";
 import multer from "../middlewares/multer-config.js";
@@ -58,5 +58,12 @@ router.route("/:token/:userId")
 
 router.route("/update/:id")
       .put(UpdateArtistById);
+
+router.route("/follow/:id")
+      .put(followArtist);
+
+router.route("/unfollow/:id")
+      .put(unfollowArtist);
+
       
 export default router;

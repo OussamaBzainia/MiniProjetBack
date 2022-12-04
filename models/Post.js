@@ -4,8 +4,9 @@ const {Schema,model} =mongoose;
 const PostSchema = new Schema ({
     title:{type:String},
     description:{type:String},
+    userId: {type:String,ref:"Artist"},
     image: {type:String},
-    userId: {type:mongoose.Types.ObjectId,ref:"Artist   "}
+    likes:{type:Array,default:[]}
     // date: Date
 
 })

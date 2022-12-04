@@ -34,7 +34,9 @@ const ArtistSchema=new Schema(
         resetPasswordToken:{ type: String },
         resetPasswordExpire :{ type: String },
         otpReset:{type:String},
-        posts:[{type:mongoose.Types.ObjectId,ref:"Post"}],    
+        posts:[{type:mongoose.Types.ObjectId,ref:"Post"}],
+        followers:[],
+        followings:[],    
         token: { type: String },
         ProfilePic:{
             type: String
