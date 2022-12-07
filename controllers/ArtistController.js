@@ -238,6 +238,43 @@ export async function login(req,res){
     }
 }
 
+//login with google 
+
+export async function loginGoogle(req,res){
+
+  try{
+      const { email } = req.body;
+  
+      const artist = await Artist.findOne({ email });
+
+      if (artist) {
+          // Create token
+          const token = jwt.sign(
+            { user_id: Artist._id, email },
+            process.env.TOKEN_KEY,
+            {
+              expiresIn: "2h",
+            }
+          );      
+     
+          // save user token
+          artist.token = token;
+
+          req.session.token = token;
+          // artist
+          res.status(200).json(artist);
+        }
+      else{
+          res.status(400).send("invalid Information")       }
+
+  }
+
+  catch(err){
+      console.log(err);
+  }
+}
+
+
 
 //sign out 
 

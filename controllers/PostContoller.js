@@ -83,6 +83,20 @@ export async function getPost(req,res){
     });
 }
 
+//get all posts
+export async function getAllPosts(req,res){
+    const id= req.params.id
+    Post
+    .find({userId:id})
+    .then(doc =>{
+        res.status(200).json(doc);
+    })
+    .catch(err=>{
+        res.status(500).json({error:err});
+    });
+}
+
+
 //delete post
 
 export function deleteOnePost(req,res){
