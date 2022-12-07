@@ -452,3 +452,16 @@ export async function  unfollowArtist(req, res) {
     res.status(403).json("you cant unfollow yourself");
   }
 }
+
+//get all user posts
+
+export async function getAllPosts(req,res){
+  try {
+    const userId = req.params.id;
+    const result = await Artist.findById(userId).populate("posts");
+    res.send(result.posts);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Something went wrong, check logs");
+  }
+}
