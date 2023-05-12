@@ -1,16 +1,30 @@
-version: "3.8"
+version: "3"
 
 services:
- app:
-  container_name: app
+ web:
   restart: always
   build: .
   ports:
    - "9090:9090"
-  links:
+  depends_on:
    - mongo
+  networks:
+   - aestetica
+  environment:
+   - NODE_ENV=production
+  volumes:
+   - media:/public/ 
  mongo:
   container_name: mongo
   image: mongo
   ports:
    - '27017:27017'
+  volumes: 
+   - aestetica:/data/db
+  networks: 
+   - aestetica
+volumes:
+ aestetica:
+ media:
+networks:
+ aestetica

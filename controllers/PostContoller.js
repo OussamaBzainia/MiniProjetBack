@@ -25,35 +25,28 @@ import mongoose from "mongoose";
 
 
 // create post
-export async function addPost(req,res){
-    // const {userId}=req.body;
-    // let existingUser;
-    // try{
-    //     existingUser=await Artist.findById(userId)
-
-    // }
-    // catch(err){
-    //     return console.log(err);
-    // }
-    // if(!existingUser){
-    //     return res.status(400).json({message:"Unable to find the user"});
-    // }
-    Post.create({
-        title:req.body.title,
-        description:req.body.description,
-        //image:`${req.protocol}://${req.get('host')}/img/${req.file.filename}`,
-        //userId:req.body.userId
-        
-    })
-    .then(newPost=>{
-        //existingUser.posts.push(newPost);
-        //existingUser.save();
-        res.status(200).json(newPost);
-    })
-    .catch(err=>{
-        res.status(500).json({error:err});
-    });
-}
+export async function addPost(req, res) {
+    const { userId } = req.body;
+    let existingUser;
+    try {
+      existingUser = await Artist.findById(userId);
+      if (!existingUser) {
+        return res.status(400).json({ message: "Unable to find the user" });
+      }
+      const newPost = await Post.create({
+        description: req.body.description,
+        image: `${req.protocol}://${req.get("host")}${process.env.IMGURL}/${req.file.filename}`,
+        userId: userId,
+      });
+      existingUser.posts.push(newPost);
+      await existingUser.save(); // Wait for the user to be saved before responding
+      res.status(200).json(newPost);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Unable to create post" });
+    }
+  }
+  
 
 //update post
 export async function UpdatePostById(req,res)

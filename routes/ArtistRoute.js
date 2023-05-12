@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllArtists,AddArtist,getOneArtist,deleteOneArtist,registerArtist, login,loginGoogle,getAllPosts, signOut, sendpasswordEmail, resetPassword,verifyEmail,UpdateArtistById,followArtist,unfollowArtist } from '../controllers/ArtistController.js';
+import { getAllArtists,AddArtist,getOneArtist,deleteOneArtist,registerArtist, login,loginGoogle,getAllPosts, signOut, sendpasswordEmail, resetPassword,verifyEmail,UpdateArtistById,followArtist,unfollowArtist, updatePhoto } from '../controllers/ArtistController.js';
 import { check, validationResult } from "express-validator";
 import auth from "../middlewares/auth.js";
 import multer from "../middlewares/multer-config.js";
@@ -47,6 +47,10 @@ router
       .route("/logOut")
       .post(signOut);
 
+
+router.route("/updatePhoto/:id")
+      .put(multer,updatePhoto)
+
 router.post("/welcome", auth, (req, res) => {
             res.status(200).send("Welcome");
           });
@@ -60,7 +64,7 @@ router.route("/resetPassword")
 router.route("/:token/:userId")
           .post(resetPassword)
 
-router.route("/update/:id")
+router.route("/UpdateArtistById/:id")
       .put(UpdateArtistById);
 
 router.route("/follow/:id")

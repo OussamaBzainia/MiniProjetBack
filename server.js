@@ -6,6 +6,7 @@ import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import Artistrouter from './routes/ArtistRoute.js';
 import PostRoute from './routes/PostRoute.js';
+import ChatRoute from './routes/ChatRoute.js';
 import passport from 'passport';
 import GoogleStrategy from 'passport-google-oauth20';
 import flash from 'express-flash';
@@ -13,7 +14,8 @@ import Artist from './models/Artist.js';
 
 
 const app=express();
-const hostname='127.0.0.1';
+const hostname='172.16.13.145';
+// 0.0.0.0
 const port=process.env.PORT || 9090;
 const DataBaseName='MiniProjeta';
 
@@ -25,7 +27,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
-app.use("/image", express.static("public/images")); 
+app.use("/media", express.static("media"));
 
 app.use(
   cookieSession({
@@ -87,6 +89,7 @@ app.get(
 
 mongoose
   .connect(`mongodb://localhost:27017/${DataBaseName}`)
+  //mongodb://mongo/[]]Dqtq bsenq;le
   .then(() => {
     console.log(`connected to ${DataBaseName}`);
   })
@@ -94,9 +97,13 @@ mongoose
     console.log(err);
   });
 
+  //routes
 app.use('/MiniProjet',Artistrouter);
 app.use(PostRoute);
+app.use(ChatRoute);
 
   app.listen(port,hostname,()=>{
     console.log(`Server running at http://${hostname}:${port}/`);
 });
+
+

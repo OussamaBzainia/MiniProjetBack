@@ -7,7 +7,6 @@ import bcrypt from 'bcryptjs';
 import nodemailer from "nodemailer";
 import jwt from 'jsonwebtoken';
 import crypto from "crypto";
-import  Joi from "Joi"
 import dotenv  from 'dotenv';
 
 dotenv.config();
@@ -47,13 +46,12 @@ export function AddArtist(req,res)
 
 }
 
-//Add many artists
 
 //get one
 export function getOneArtist(req,res){
     const id= req.params.id
     Artist
-    .findById(id,'username PhoneNumber Gender BirthDate Description')
+    .findById(id,'FullName username ProfilePic ')
     .then(doc =>{
         res.status(200).json(doc);
     })
@@ -85,11 +83,7 @@ export async function UpdateArtistById(req,res)
     Artist.findByIdAndUpdate(id,{
         $set:{
             username:req.body.username,
-            PhoneNumber:req.body.PhoneNumber,
-            Gender:req.body.Gender,
-            BirthDate:req.body.BirthDate,
-            Description:req.body.Description
-
+            FullName:req.body.FullName,
         }
     })
     .then(docs=>{
@@ -108,7 +102,7 @@ export async function registerArtist (req,res){
 
  
     // Get Artist input
-    const {email,mdp,FullName,confirmMdp,verified,otp,PhoneNumber,Gender,BirthDate,Description}=req.body;
+    const {email,mdp,FullName,username}=req.body;
 
     // Validate Artist input
     if (!(email)) {
@@ -134,12 +128,11 @@ export async function registerArtist (req,res){
         email: email.toLowerCase(), 
         mdp: encryptedmdp,
         FullName,
+        username:username,
         verified:false,
         otp: otpGenerated,
-        PhoneNumber,
-        Gender,
-        BirthDate,
-        Description,
+        ProfilePic:`${req.protocol}://${req.get("host")}${process.env.IMGURL
+      }/profilePlaceHolder.png`,
         posts:[]
 
       })
@@ -175,67 +168,75 @@ export async function registerArtist (req,res){
 
 
 
-export async function verifyEmail(req,res){
-    const {email,otp} = req.body;
-    const user =  validateUserSignUp(email, otp);
+export async function verifyEmail(req, res) {
+  try {
+    const { email, otp } = req.body;
+    const user = validateUserSignUp(email, otp);
     res.status(200).json(user);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
 }
+
 
 export async function validateUserSignUp(email, otp){
-    const user = await Artist.findOne({
-        email,
-      });
-      if (!user) {
-        return [false, 'User not found'];
-      }
-      if (user && user.otp !== otp) {
-        return [false, 'Invalid OTP'];
-      }
+  const user = await Artist.findOne({
+      email,
+  });
+  
+  if (!user) {
+      return [false, 'User not found'];
+  }
+  
+  if (user && user.otp !== otp) {
+      return [false, 'Invalid OTP'];
+  }
 
-      const updatedUser = await Artist.findByIdAndUpdate(user._id, {verified: true });
-      console.log(updatedUser);
+  const updatedUser = await Artist.findByIdAndUpdate(user._id, {verified: true });
+  console.log(updatedUser);
+
+  if (!updatedUser) {
+      return [false, 'Error verifying user'];
+  }
+  
+  return [true, 'User verified successfully'];
 }
+
 
 
 
 //Login artist
 
-export async function login(req,res){
+export async function login(req, res) {
+  const { email, mdp } = req.body;
+  
+  if (!(email && mdp)) {
+    res.status(400).send("All fields are required");
+  }
 
-    try{
-        const { email, mdp } = req.body;
+  const user = await Artist.findOne({ email: req.body.email.toLowerCase() });
 
-        if (!(email && mdp)) {
-            res.status(400).send("All input is required");
-          }
-    
-        const artist = await Artist.findOne({ email });
-
-        if (artist && (bcrypt.compare(mdp, artist.mdp))) {
-            // Create token
-            const token = jwt.sign(
-              { user_id: Artist._id, email },
-              process.env.TOKEN_KEY,
-              {
-                expiresIn: "2h",
-              }
-            );      
-       
-            // save user token
-            artist.token = token;
-
-            req.session.token = token;
-            // artist
-            res.status(200).json(artist);
-          }
-        else{
-            res.status(400).send("invalid Information")       }
-
+  if (user) {
+    if (await bcrypt.compare(mdp, user.mdp)) {
+      const newToken = await jwt.sign({ id: user._id }, process.env.TOKEN_KEY, {
+        expiresIn: "4d",
+      });
+      user.token = newToken;
+      user
+        .updateOne({ _id: user._id, token: newToken })
+        .then((docs) => {
+          res.status(200).json(user);
+        })
+        .catch((err) => {
+          res.status(500).json({ error: err });
+        });
+    } else {
+      res.status(401).send("Invalid credentials");
     }
-
-    catch(err){
-        console.log(err);
-    }
+  } else {
+    res.status(404).send("Unexistant user");
+  }
 }
 
 //login with google 
@@ -289,7 +290,29 @@ export async function signOut(req,res,next){
     }
 }
 
-
+//update profile picture
+export async function updatePhoto(req, res) {
+  const id= req.params.id
+  console.log(id);
+  Artist.findOneAndUpdate(
+    { _id: id },
+    {
+      ProfilePic: `${req.protocol}://${req.get("host")}${
+        process.env.IMGURL
+      }/${req.file.filename}`,
+    }
+  )
+    .then((docs) => {
+      var url = `${req.protocol}://${req.get("host")}${process.env.IMGURL}/${
+        req.file.filename
+      }`;
+      res.status(200).json({ newURL: url });
+    })
+    .catch((err) => {
+      res.status(500).json({ error: err });
+      console.log(err);
+    });
+}
 
 
 // //forgot password

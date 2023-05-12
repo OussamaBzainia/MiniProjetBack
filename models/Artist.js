@@ -9,9 +9,6 @@ const ArtistSchema=new Schema(
 
         email:{
             type:String,
-           
-            
-            
         },
         mdp:{
             type:String,
