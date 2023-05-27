@@ -18,8 +18,8 @@ import handleSocketConnection from './controllers/SocketController.js';
 
 
 const app=express();
-const hostname='0.0.0.0';
-// 
+
+
 const port=process.env.PORT || 9090;
 const DataBaseName='MiniProjeta';
 
@@ -92,7 +92,7 @@ app.get(
 );
 
 mongoose
-  .connect(`mongodb://localhost:27017/${DataBaseName}`)
+  .connect(process.env.MONGODB_URI)
   //mongodb://mongo/[]]Dqtq bsenq;le
   .then(() => {
     console.log(`connected to ${DataBaseName}`);
@@ -115,7 +115,7 @@ const io = new Server(server);
 handleSocketConnection(io);
 
 server.listen(port,hostname,()=>{
-    console.log(`Server running at http://${hostname}:${port}/`);
+    console.log(`Server running on ${port}`);
 });
 
 
