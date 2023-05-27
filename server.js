@@ -95,7 +95,7 @@ mongoose
   .connect(process.env.MONGODB_URI)
   //mongodb://mongo/[]]Dqtq bsenq;le
   .then(() => {
-    console.log(`connected to ${DataBaseName}`);
+    console.log(`connected to database`);
   })
   .catch((err) => {
     console.log(err);
@@ -114,7 +114,7 @@ const server = http.createServer(app);
 const io = new Server(server);
 handleSocketConnection(io);
 
-server.listen(port,hostname,()=>{
+server.listen(port,()=>{
     console.log(`Server running on ${port}`);
 });
 
