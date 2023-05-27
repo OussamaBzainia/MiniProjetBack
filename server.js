@@ -15,13 +15,14 @@ import GoogleStrategy from 'passport-google-oauth20';
 import flash from 'express-flash';
 import Artist from './models/Artist.js';
 import handleSocketConnection from './controllers/SocketController.js';
+import dotenv  from 'dotenv';
+dotenv.config();
 
 
 const app=express();
 
 
 const port=process.env.PORT || 9090;
-const DataBaseName='MiniProjeta';
 
 mongoose.set("debug", true);
 mongoose.Promise=global.Promise;
@@ -91,9 +92,11 @@ app.get(
   })
 );
 
-mongoose
-  .connect(process.env.MONGODB_URI)
-  //mongodb://mongo/[]]Dqtq bsenq;le
+
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
   .then(() => {
     console.log(`connected to database`);
   })
