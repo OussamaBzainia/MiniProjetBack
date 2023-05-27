@@ -18,8 +18,8 @@ import handleSocketConnection from './controllers/SocketController.js';
 
 
 const app=express();
-const hostname='172.17.5.39';
-// 0.0.0.0
+const hostname='0.0.0.0';
+// 
 const port=process.env.PORT || 9090;
 const DataBaseName='MiniProjeta';
 
