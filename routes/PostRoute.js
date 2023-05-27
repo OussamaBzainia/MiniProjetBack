@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from "../middlewares/multer-config.js";
-import { addPost,getPost,deleteOnePost,UpdatePostById,getAllPosts,LikePost } from '../controllers/PostContoller.js';
+import { addPost,getPost,deleteOnePost,UpdatePostById,getAllPostsById,LikePost,getAll } from '../controllers/PostContoller.js';
 
 
 const router=express.Router();
@@ -16,7 +16,11 @@ router
 
 router
       .route('/getAllPosts/:id')
-      .get(getAllPosts);
+      .get(getAllPostsById);
+      
+router
+.route('/getPosts')
+.get(getAll);
 
 router
       .route('/updatePost/:id')

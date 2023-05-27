@@ -4,17 +4,21 @@ import cors from 'cors';
 import cookieSession from 'cookie-session';
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
+import { Server } from 'socket.io';
+import http from 'http';
 import Artistrouter from './routes/ArtistRoute.js';
 import PostRoute from './routes/PostRoute.js';
 import ChatRoute from './routes/ChatRoute.js';
+import NotificationRoute from './routes/NotificationRoute.js';
 import passport from 'passport';
 import GoogleStrategy from 'passport-google-oauth20';
 import flash from 'express-flash';
 import Artist from './models/Artist.js';
+import handleSocketConnection from './controllers/SocketController.js';
 
 
 const app=express();
-const hostname='172.16.13.145';
+const hostname='172.17.5.39';
 // 0.0.0.0
 const port=process.env.PORT || 9090;
 const DataBaseName='MiniProjeta';
@@ -101,8 +105,16 @@ mongoose
 app.use('/MiniProjet',Artistrouter);
 app.use(PostRoute);
 app.use(ChatRoute);
+app.use(NotificationRoute);
 
-  app.listen(port,hostname,()=>{
+
+
+//socket connection
+const server = http.createServer(app);
+const io = new Server(server);
+handleSocketConnection(io);
+
+server.listen(port,hostname,()=>{
     console.log(`Server running at http://${hostname}:${port}/`);
 });
 

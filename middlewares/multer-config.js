@@ -14,8 +14,8 @@ export default multer({
   }),
 
   fileFilter(req, file, cb) {
-    if (!file.originalname.match(/\.(png|jpg|jpeg|JPG|PNG|JPEG)$/)) {
-      return cb(new Error("Please upload a Image"));
+    if (!file.originalname.match(/\.(png|jpg|jpeg|JPG|PNG|JPEG|mp4|mov|avi)$/)) {
+      return cb(new Error("Please upload an image or video"));
     }
     cb(undefined, true);
   },

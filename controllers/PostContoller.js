@@ -1,6 +1,7 @@
 import Post from "../models/Post.js"
 import jwt from 'jsonwebtoken';
 import Artist from "../models/Artist.js";
+import Notification from "../models/Notification.js";
 import mongoose from "mongoose";
 
 
@@ -47,7 +48,7 @@ export async function addPost(req, res) {
     }
   }
   
-
+ 
 //update post
 export async function UpdatePostById(req,res)
 {
@@ -76,17 +77,18 @@ export async function getPost(req,res){
     });
 }
 
+//get all posts by id 
+export async function getAllPostsById(req,res){
+  res.send({
+    posts: await Post.find({userId: req.params.id})
+        .populate("userId")
+})
+}
+
+
 //get all posts
-export async function getAllPosts(req,res){
-    const id= req.params.id
-    Post
-    .find({userId:id})
-    .then(doc =>{
-        res.status(200).json(doc);
-    })
-    .catch(err=>{
-        res.status(500).json({error:err});
-    });
+export async function getAll(req, res) {
+  res.send({posts: await Post.find().populate("userId")})
 }
 
 
@@ -112,9 +114,21 @@ export async function LikePost(req, res) {
       const post = await Post.findById(req.params.id);
       if (!post.likes.includes(req.body.userId)) {
         await post.updateOne({ $push: { likes: req.body.userId } });
+        await post.updateOne({ $set: { isLiked: true } });
+        
+        // Create a new notification
+      const notification = new Notification({
+        userId: post.userId,
+        message: 'Liked your post',
+        likedBy:req.body.userId,
+        createdAt: new Date()
+      });
+
+      await notification.save();
         res.status(200).json("The post has been liked");
       } else {
         await post.updateOne({ $pull: { likes: req.body.userId } });
+        await post.updateOne({ $set: { isLiked: false } }); 
         res.status(200).json("The post has been disliked");
       }
     } catch (err) {

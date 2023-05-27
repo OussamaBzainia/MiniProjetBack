@@ -17,7 +17,7 @@ export function getAllArtists(req,res){
     Artist
     .find({})
     .then(artists=>{
-        res.status(200).json(artists)
+        res.status(200).json({ artists: artists })
     })
     .catch(err=>{
         res.status(500).json({error:err});
